@@ -7,7 +7,8 @@ pipeline {
                 script {
                     checkout([$class: 'GitSCM',
                         branches: [[name: '**']], // Fetch all branches
-                        userRemoteConfigs: [[url: 'https://github.com/surajn17/niharika.git']]
+                        userRemoteConfigs: [[url: 'https://github.com/surajn17/niharika.git']],
+                        extensions: [[$class: 'WildcardSCMHeadFilter', includes: ['*']]] // Include all branches
                     ])
                 }
             }
