@@ -6,9 +6,7 @@ pipeline {
             steps {
                 script {
                     checkout([$class: 'GitSCM',
-                        branches: scm.branches,
-                        doGenerateSubmoduleConfigurations: false,
-                        extensions: [[$class: 'CleanBeforeCheckout']],
+                        branches: [[name: 'refs/heads/*']],  // Fetch all branches
                         userRemoteConfigs: [[url: 'https://github.com/surajn17/niharika.git']]
                     ])
                 }
