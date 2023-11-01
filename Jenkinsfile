@@ -5,7 +5,10 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    checkout scm
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: '**']], // Fetch all branches
+                        userRemoteConfigs: [[url: 'https://github.com/surajn17/niharika.git']]
+                    ])
                 }
             }
         }
@@ -55,8 +58,6 @@ pipeline {
 
     post {
         always {
-            // Your post-build actions here
-            // For example, sending an email notification
             emailext attachLog: true,
                 body: 'Jenkins Pipeline execution completed!',
                 subject: "${currentBuild.fullDisplayName} ${currentBuild.result}",
