@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'LocalBranch', localBranch: 'main']],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[url: 'https://github.com/surajn17/niharika.git']]
+                    ])
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    withSonarQubeEnv('SonarScanner') {
+                        sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=my-sonar -Dsonar.sources=."
+                    }
+                }
+            }
+        }
+
+        stage('Package and Deploy') {
+            steps {
+                script {
+                    sh "zip -r code.zip ."
+                    sh "mv code.zip /var/www/niharika/niharika/"
+                    sh "cd /var/www/niharika/niharika/ && unzip -o code.zip"
+                    
+                    // Deployment steps - replace this section with your deployment process
+                    
+                    sh "rm /var/www/niharika/niharika/code.zip" // Delete the zip file from the server
+                }
+            }
+        }
+
+        stage('Clean Up SonarQube') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarScanner') {
+                        sh "${scannerHome}/bin/sonar-scanner -X -Dsonar.projectKey=my-sonar -Dsonar.sources=. -Dsonar.analysis.mode=preview -Dsonar.issue.ignore.multicriteria=e1"
+                    }
+                }
+            }
+        }
+    }
+}
