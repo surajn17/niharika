@@ -14,7 +14,7 @@ pipeline {
                 // Use SonarScanner tool
                 script {
                     def scannerHome = tool 'SonarScanner'
-                    withSonarQubeEnv('SonarQube Scanner') {
+                    withSonarQubeEnv('SonarScanner') {
                         // Run SonarQube analysis
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
